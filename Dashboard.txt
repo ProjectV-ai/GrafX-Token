@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARC Wallet - Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif; 
+            background-color: #2C2C2E; /* Core: Very dark gray page background */
+            color: #E5E5EA; /* Core: Primary text color for body */
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        /* New Accent Color Classes */
+        .text-accent-primary { color: #0A84FF !important; }
+        .bg-accent-primary { background-color: #0A84FF !important; }
+        .border-accent-primary { border-color: #0A84FF !important; }
+
+        .text-accent-success { color: #30D158 !important; }
+        .bg-accent-success { background-color: #30D158 !important; }
+
+        .text-accent-warning { color: #FF9F0A !important; }
+        .bg-accent-warning { background-color: #FF9F0A !important; }
+
+        .text-accent-error { color: #FF453A !important; }
+        .bg-accent-error { background-color: #FF453A !important; }
+
+        .text-accent-highlight { color: #BF5AF2 !important; }
+        .bg-accent-highlight { background-color: #BF5AF2 !important; }
+
+
+        /* Gradient for "Wallet" text - New Blue -> New Violet -> Old Red */
+        .brand-gradient-text {
+            background: linear-gradient(90deg, #0A84FF, #BF5AF2, #E87A5D);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+        /* Gradient for primary buttons - New Blue -> New Violet */
+        .btn-main-gradient {
+            background: linear-gradient(90deg, #0A84FF, #BF5AF2); 
+            border: none;
+            color: white;
+            transition: opacity 0.3s ease;
+        }
+        .btn-main-gradient:hover {
+            opacity: 0.85;
+            color: white;
+        }
+
+        .navbar {
+            background-color: #3A3A3C; /* Core: Elevated Panel */
+            border-bottom: 1px solid #0A84FF; /* Core: Primary Accent for key border */
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .navbar-brand .arc-text { color: #E5E5EA; /* Core: Text - Primary */ }
+        /* .navbar-brand .wallet-text is handled by .brand-gradient-text */
+
+        .nav-link { color: #E5E5EA !important; /* Core: Text - Primary */ }
+        .nav-link:hover { color: #FF453A !important; } /* Core: Error Red for strong hover */
+        
+        .dropdown-menu { 
+            background-color: #3A3A3C; /* Core: Elevated Panel */
+            border: 1px solid #48484A; /* Core: Border / Divider */
+        }
+        .dropdown-item { color: #E5E5EA !important; /* Core: Text - Primary */ }
+        .dropdown-item:hover { 
+            background-color: rgba(191, 90, 242, 0.2) !important; /* Core: Violet highlight for dropdown hover */
+            color: #fff !important;
+        }
+        .dropdown-divider { border-color: #48484A !important; /* Core: Border / Divider */ }
+
+
+        .sidebar {
+            background-color: #3A3A3C; /* Core: Elevated Panel */
+            padding-top: 1rem;
+            min-height: calc(100vh - 56px); 
+            position: sticky;
+            top: 56px; 
+            border-right: 1px solid #0A84FF; /* Core: Primary Accent for key border */
+        }
+        .sidebar .nav-link {
+            padding: 0.75rem 1rem;
+            border-radius: 0.25rem;
+            margin-bottom: 0.5rem;
+            color: #E5E5EA; /* Core: Text - Primary for sidebar links */
+        }
+        .sidebar .nav-link.active, .sidebar .nav-link:hover {
+            background: linear-gradient(90deg, rgba(10, 132, 255, 0.2), rgba(191, 90, 242, 0.15)); /* Blue -> Violet transparent */
+            color: #fff !important; /* Keep white for active/hover for pop */
+            border-left: 3px solid #0A84FF; /* Core: Primary Accent */
+            padding-left: calc(1rem - 3px);
+        }
+        .sidebar .nav-link i { margin-right: 0.75rem; }
+
+        .main-content { padding: 2rem; flex-grow: 1; }
+        .main-content .border-bottom { /* For the header divider under "Dashboard" title */
+            border-color: #0A84FF !important; /* Core: Primary Accent for header divider */
+        }
+
+
+        .card {
+            background-color: #3A3A3C; /* Core: Elevated Panel */
+            border: 1px solid #48484A; /* Core: Border / Divider */
+            border-radius: 0.5rem; 
+            margin-bottom: 1.5rem;
+        }
+        .card-header {
+            background-color: #3A3A3C; /* Core: Elevated Panel (can be same as card body or slightly different) */
+            color: #E5E5EA; /* Core: Text - Primary */
+            font-weight: bold;
+            border-bottom: 1px solid #0A84FF; /* Core: Primary Accent for key border */
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+        }
+        .card-title { color: #E5E5EA; /* Core: Text - Primary */ }
+        .card-text { color: #8E8E93; /* Core: Text - Secondary */ }
+        .list-group-item {
+            background-color: transparent; 
+            border-color: #48484A; /* Core: Border / Divider */
+            color: #E5E5EA; /* Core: Text - Primary for list item text */
+        }
+        .list-group-item .text-secondary { color: #8E8E93 !important; /* Core: Text - Secondary */ }
+        /* Example of using new success accent */
+        .portfolio-value-positive { color: #30D158; }
+
+
+        .footer {
+            background-color: #3A3A3C; /* Core: Elevated Panel */
+            color: #8E8E93; /* Core: Text - Secondary */
+            padding: 1rem 0;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 1px solid #0A84FF; /* Core: Primary Accent for key border */
+        }
+        @media (max-width: 768px) {
+            .sidebar { 
+                position: static; 
+                min-height: auto; 
+                border-right: none; 
+                border-bottom: 1px solid #0A84FF; /* Core: Primary Accent */
+            }
+            .main-content { padding: 1rem; }
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #2C2C2E; } 
+        ::-webkit-scrollbar-thumb { background: #0A84FF; border-radius: 4px; } /* Core: Primary Accent */
+        ::-webkit-scrollbar-thumb:hover { background: #FF453A; } /* Core: Error Red for hover */
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="dashboard.html">
+            <span class="arc-text">ARC</span> <span class="wallet-text brand-gradient-text">Wallet</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="#"><i class="fas fa-bell"></i> Notifications</a>
+                </li>
+                <li class="nav-item dropdown" id="userProfileDropdownContainer" style="display:none;">
+                    <a class="nav-link dropdown-toggle" href="#" id="userProfileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-user-circle"></i> <span id="loggedInUserName">User</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userProfileDropdown">
+                        <a class="dropdown-item" href="#">My Account</a>
+                        <a class="dropdown-item" href="#">Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" onclick="handleLogout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </li>
+                <li class="nav-item" id="loginButtonContainer" style="display:none;">
+                    <a class="nav-link" href="arc_login_v1.html"><i class="fas fa-sign-in-alt"></i> Login</a>
+                </li>
+                <li class="nav-item dropdown" id="demoLoginNavDropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="demoLoginDropdownNav" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-rocket"></i> Demo Logins
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="demoLoginDropdownNav">
+                        <a class="dropdown-item" href="#" onclick="handleNavDemoLogin('user')">Login as User</a>
+                        <a class="dropdown-item" href="#" onclick="handleNavDemoLogin('admin')">Login as Admin</a>
+                        <a class="dropdown-item" href="#" onclick="handleNavDemoLogin('tenant')">Login as Tenant</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse" id="sidebarMenu">
+                <div class="sidebar-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a class="nav-link active" href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="wallet_management.html"><i class="fas fa-wallet"></i> Wallet Management</a></li>
+                        <li class="nav-item"><a class="nav-link" href="smart_contracts.html"><i class="fas fa-file-contract"></i> Smart Contracts</a></li>
+                        <li class="nav-item"><a class="nav-link" href="money_streams.html"><i class="fas fa-stream"></i> Money Streams</a></li>
+                        <li class="nav-item"><a class="nav-link" href="check_writing.html"><i class="fas fa-money-check-alt"></i> Check Writing</a></li>
+                        <li class="nav-item"><a class="nav-link" href="arc_fiat_on_ramp_v1.html"><i class="fas fa-credit-card"></i> Fiat On-Ramp</a></li>
+                        <li class="nav-item"><a class="nav-link" href="landlord_dashboard.html"><i class="fas fa-city"></i> Landlord Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="arc_legal_compliance_center_v1.html"><i class="fas fa-balance-scale"></i> Legal Compliance</a></li>
+                        <li class="nav-item"><a class="nav-link" href="transaction_history_global.html"><i class="fas fa-history"></i> Transaction History</a></li>
+                        <li class="nav-item mt-auto mb-3"><a class="nav-link" href="#"><i class="fas fa-user-circle"></i> My Account</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 main-content">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Dashboard</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <button type="button" class="btn btn-sm btn-main-gradient mr-2"><i class="fas fa-plus-circle"></i> Create Wallet</button>
+                        <a href="arc_fiat_on_ramp_v1.html" class="btn btn-sm btn-main-gradient"><i class="fas fa-hand-holding-usd"></i> Buy Crypto</a>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header"><i class="fas fa-chart-pie"></i> Asset Overview</div>
+                            <div class="card-body">
+                                <h5 class="card-title">Total Portfolio Value: <span class="portfolio-value-positive">$<span id="totalPortfolioValue">0.00</span></span></h5>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">ETH: <span id="ethBalance">0.0000</span> <span class="float-right text-secondary">($<span id="ethValue">0.00</span>)</span></li>
+                                    <li class="list-group-item">USDC: <span id="usdcBalance">0.00</span> <span class="float-right text-secondary">($<span id="usdcValue">0.00</span>)</span></li>
+                                    <li class="list-group-item">DAI: <span id="daiBalance">0.00</span> <span class="float-right text-secondary">($<span id="daiValue">0.00</span>)</span></li>
+                                </ul>
+                                <a href="wallet_management.html" class="btn btn-main-gradient mt-3">View All Assets</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header"><i class="fas fa-exchange-alt"></i> Recent Transactions</div>
+                            <div class="card-body">
+                                <p class="card-text">Your latest wallet activity.</p>
+                                <p><span class="text-accent-success"><i class="fas fa-check-circle"></i></span> Transaction #123 Completed</p>
+                                <p><span class="text-accent-warning"><i class="fas fa-exclamation-triangle"></i></span> Transaction #124 Pending</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header"><i class="fas fa-file-signature"></i> Contract Summary</div>
+                            <div class="card-body"><p class="card-text">Overview of your smart contracts.</p></div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header"><i class="fas fa-wave-square"></i> Stream Summary</div>
+                            <div class="card-body"><p class="card-text">Active money streams.</p></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <footer class="footer mt-auto">
+        <div class="container"><span>&copy; 2025 ARC Wallet. All rights reserved.</span></div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        const mockAuth0 = {
+            async getUser() {
+                if (sessionStorage.getItem('arc_auth_simulated') === 'true') {
+                    return JSON.parse(sessionStorage.getItem('arc_user_simulated'));
+                }
+                return null;
+            },
+            async logout() {
+                sessionStorage.removeItem('arc_auth_simulated');
+                sessionStorage.removeItem('arc_user_simulated');
+                window.location.href = 'arc_login_v1.html'; 
+            }
+        };
+
+        async function checkAuthStatusAndLoadUser() {
+            const isAuthenticated = sessionStorage.getItem('arc_auth_simulated') === 'true';
+            const userProfileDropdownContainer = document.getElementById('userProfileDropdownContainer');
+            const loginButtonContainer = document.getElementById('loginButtonContainer');
+            const demoLoginNavDropdown = document.getElementById('demoLoginNavDropdown'); 
+
+            if (!isAuthenticated) {
+                if (userProfileDropdownContainer) userProfileDropdownContainer.style.display = 'none';
+                if (loginButtonContainer) loginButtonContainer.style.display = 'block'; 
+                if (demoLoginNavDropdown) demoLoginNavDropdown.style.display = 'block'; 
+                return false; 
+            } else {
+                if (userProfileDropdownContainer) userProfileDropdownContainer.style.display = 'block'; 
+                if (loginButtonContainer) loginButtonContainer.style.display = 'none'; 
+                if (demoLoginNavDropdown) demoLoginNavDropdown.style.display = 'none'; 
+
+                const user = await mockAuth0.getUser();
+                if (user) {
+                    const userNameElement = document.getElementById('loggedInUserName');
+                    if (userNameElement) {
+                        userNameElement.textContent = user.name || user.email;
+                    }
+                }
+                return true;
+            }
+        }
+
+        async function handleLogout() {
+            await mockAuth0.logout();
+        }
+
+        function handleNavDemoLogin(role) {
+            let userName = "Demo User";
+            let userEmail = "demo.user@example.com";
+            let userRole = role.toUpperCase();
+
+            if (role === 'admin') { userName = "Demo Admin"; userEmail = "demo.admin@example.com"; }
+            if (role === 'tenant') { userName = "Demo Tenant"; userEmail = "demo.tenant@example.com"; }
+            
+            sessionStorage.setItem('arc_auth_simulated', 'true');
+            sessionStorage.setItem('arc_user_simulated', JSON.stringify({ name: userName, email: userEmail, role: userRole }));
+            window.alert(`Logged in as ${userName}! Reloading dashboard...`); 
+            window.location.href = 'dashboard.html'; 
+        }
+
+        $(document).ready(function () {
+            checkAuthStatusAndLoadUser().then(isAuthenticated => {
+                if (isAuthenticated) {
+                    console.log("User authenticated, loading dashboard data...");
+                    $('#totalPortfolioValue').text('1,250.75');
+                    $('#ethBalance').text('0.5000');
+                    $('#ethValue').text('1,250.00');
+                    $('#usdcBalance').text('0.75');
+                    $('#usdcValue').text('0.75');
+                } else {
+                    console.log("User not authenticated. Dashboard content may be limited or login prompted.");
+                     $('#totalPortfolioValue').text('0.00');
+                     $('#ethBalance').text('0.0000');
+                     $('#ethValue').text('0.00');
+                     $('#usdcBalance').text('0.00');
+                     $('#usdcValue').text('0.00');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
